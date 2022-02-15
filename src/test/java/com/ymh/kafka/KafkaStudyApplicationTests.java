@@ -1,4 +1,4 @@
-package com.example.kafkastudy;
+package com.ymh.kafka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
