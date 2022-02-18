@@ -26,19 +26,22 @@ public class KafkaConsumerConfig {
     public Map<String, Object> consumerConfig() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
+        /* for listen object msg, move to consumerFactory()
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);*/
         return props;
     }
 
     @Bean
     public ConsumerFactory<String, Message> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfig());
+        JsonDeserializer<Message> jsonDeserializer = new JsonDeserializer<>();
+        jsonDeserializer.addTrustedPackages("com.ymh.kafka");
+        return new DefaultKafkaConsumerFactory<>(consumerConfig(), new StringDeserializer(), jsonDeserializer);
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Message>> containerFactory(ConsumerFactory<String, Message> consumerFactory) {
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Message>> messageFactory(ConsumerFactory<String, Message> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
 
